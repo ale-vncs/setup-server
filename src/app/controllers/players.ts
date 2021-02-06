@@ -2,6 +2,7 @@ import * as zod from 'zod'
 import AbstractController from '@src/app/controllers/abstract-controller'
 import { Request, Response } from 'express'
 import PlayerService from '@services/player-service'
+import removeKeys from "@utils/remove-keys";
 
 class Players extends AbstractController {
   private playerSrv = new PlayerService()
@@ -27,12 +28,11 @@ class Players extends AbstractController {
     })
 
     const body = schemaCreatePlayer.parse(req.body)
-    const player = await this.playerSrv.createPlayer(body)
+    await this.playerSrv.createPlayer(body)
 
     this.result(res, {
-      status: 'OK',
-      msg: 'playerCreatedSuccess',
-      body: player
+      status: 'Created',
+      msg: 'playerCreatedSuccess'
     })
   }
 }

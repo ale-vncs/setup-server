@@ -1,4 +1,5 @@
 import Api from '../utils/api'
+import PlayerBuilder from '../builder/player-builder'
 
 const api = new Api()
 
@@ -8,15 +9,13 @@ beforeAll(async () => {
 
 describe('Test of controller player.ts', () => {
   it('Should create a new player', async () => {
-    const res = await api.post('/players').send({
-      name: 'rrr'
-    })
+    const newPlayer = new PlayerBuilder().build()
+    const res = await api.post('/players').send(newPlayer)
 
     expect(res.body).toEqual({
       status: '201 - Created',
-      msg: 'Jogador criado com sucesso.',
-      code: 'playerCreatedSuccess',
-      body: {}
+      msg: 'Jogador cadastrado com sucesso.',
+      code: 'playerCreatedSuccess'
     })
   })
 })

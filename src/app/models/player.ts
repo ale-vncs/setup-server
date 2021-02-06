@@ -24,7 +24,7 @@ export interface PlayerInstance extends Model<PlayerAttributes, PlayerCreation>,
 
 export type PlayerModel = ModelCtor<PlayerInstance>
 
-const player = sequelize.define<PlayerInstance>('player', {
+const Player = sequelize.define<PlayerInstance>('player', {
   player_id: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -43,17 +43,17 @@ const player = sequelize.define<PlayerInstance>('player', {
 })
 
 export const associate = (models: ListModels): void => {
-  player.hasOne(models.Gender, {
+  Player.hasOne(models.Gender, {
     sourceKey: 'gender_id',
     foreignKey: 'gender_id',
     as: 'gender'
   })
 
-  player.hasOne(models.Position, {
+  Player.hasOne(models.Position, {
     sourceKey: 'position_id',
     foreignKey: 'position_id',
     as: 'position'
   })
 }
 
-export default player
+export default Player

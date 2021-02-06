@@ -6,6 +6,7 @@ import { logger } from '@logger'
 import randomBytes from 'random-bytes'
 import { setHttpContext } from '@utils/http-context'
 import Gender from '@models/gender'
+import { ApiError } from '@src/app/exceptions/api-error'
 
 class PreConfig extends AbstractMiddleware {
   async init (req: Request, res: Response, next: NextFunction): Promise<unknown> {
@@ -19,10 +20,7 @@ class PreConfig extends AbstractMiddleware {
       await DatabaseService.checkConnection()
     } catch (e) {
       logger.error(`Error na conexão com banco de dados: ${e}`)
-      return this.result(res, {
-        status: 'Internal Server Error',
-        msg: 'connectionDatabaseError'
-      })
+      throw new ApiError('Internal Server Error', 'connectionDatabaseError')
     }
 
     if (process.env.SECURITY_ENABLED === 'true') {

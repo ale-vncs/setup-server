@@ -1,42 +1,44 @@
 version: "3.7"
 
-networks: 
-  mmi-backend:
-    driver: bridge
-
-services: 
+services:
   postgres:
     image: postgres
     environment:
-      POSTGRES_PASSWORD: "mmi"
-      POSTGRES_USER: "mmi"
-      POSTGRES_DB: "mmi"
+      POSTGRES_PASSWORD: "mb"
+      POSTGRES_USER: "mb"
+      POSTGRES_DB: "mb-api-dev"
     ports:
       - "15430:5431"
     networks:
-      - mmi-backend
-      
+      - mb-backend
+
   pgadmin:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: "admin@postgres.br"
       PGADMIN_DEFAULT_PASSWORD: "admin123"
     ports:
-      - "17654:80"
+      - "1654:80"
     networks:
-      - mmi-backend
+      - mb-backend
 
-  mmi-api:
+  mb-api:
     image: node:13-alpine
     working_dir: "/home/api"
     restart: always
-    ports: 
+    ports:
       - "3001:3001"
-    volumes: 
+    volumes:
       - ./:/home/api
       - /home/api/node_modules
-
+    networks:
+      - mb-backend
     command: >
       sh -c "yarn &&
-      yarn dev &&
+      yarn base:init &&
+      yarn start:dev &&
       yarn cache clean"
+
+networks:
+  mb-backend:
+    driver: bridge
