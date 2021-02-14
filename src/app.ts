@@ -10,6 +10,7 @@ import Routes from './app/routes'
 import models from './app/models'
 
 import DataBaseService from '@services/database-service'
+import VerifyEnv from '@utils/verify-env'
 import { pathApi } from './config/paths'
 import { logger } from '@logger'
 
@@ -21,6 +22,7 @@ class App {
   private env = process.env.NODE_ENV
 
   async init (): Promise<void> {
+    this.verifyEnv()
     this.setupMiddleware()
     await DataBaseService.checkConnection()
     await models.init() // Inicia os models
@@ -59,6 +61,29 @@ class App {
 
   getApp (): Express {
     return this.app
+  }
+
+  verifyEnv () {
+    const listEnv = [
+      'NODE_ENV',
+      'AWS_ACCESS_KEY_ID',
+      'AWS_SECRET_ACCESS_KEY',
+      'AWS_REGION',
+      'AWS_BUCKET',
+      'STORAGE_MODE',
+      'SECRET_KEY_TOKEN',
+      'SECRET_KEY_CRYPT',
+      'SECURITY_ENABLED',
+      'SESSION_TIME',
+      'URL_WEB',
+      'POSTGRES_HOST',
+      'POSTGRES_USER',
+      'POSTGRES_PASSWORD',
+      'POSTGRES_PORT',
+      'SENDGRID_API_KEY'
+    ]
+
+    new VerifyEnv(listEnv).verifyEnv()
   }
 }
 

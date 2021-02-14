@@ -19,6 +19,7 @@ export const messages = {
   methodNotFound: 'Método não encontrado.',
   dependentNotFound: 'Dependência não encontrada.',
   errorOnCompressImage: 'Error ao comprimir imagem',
+  varEnvNotSetup: 'Variaveis de ambiente não setados',
   //= ===========================================================================================
   userNotAuthorization: 'Usuário não autorizado.',
   //= ===========================================================================================
