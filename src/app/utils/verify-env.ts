@@ -1,4 +1,5 @@
 import { ApiError } from '@src/app/exceptions/api-error'
+import { logger } from '@logger'
 
 class VerifyEnv {
   private listEnv: string[]
@@ -16,6 +17,7 @@ class VerifyEnv {
     })
 
     if (listEnvNotSet.length) {
+      logger.error(`Variaveis de ambiente não inciado: ${JSON.stringify(listEnvNotSet)}`)
       throw new ApiError('Internal Server Error', 'varEnvNotSetup', JSON.stringify(listEnvNotSet))
     }
   }
