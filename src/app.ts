@@ -1,5 +1,6 @@
+import '../src/config/init-env'
 import httpContext from 'express-http-context'
-import 'dotenv/config'
+import helmet from 'helmet'
 import 'express-async-errors'
 import './app/utils/module-alias'
 import express, { Express } from 'express'
@@ -13,6 +14,12 @@ import DataBaseService from '@services/database-service'
 import VerifyEnv from '@utils/verify-env'
 import { pathApi } from './config/paths'
 import { logger } from '@logger'
+import { promisify } from 'util'
+
+enum ExitStatus {
+  Success,
+  Failure
+}
 
 class App {
   private app = express()
@@ -20,6 +27,7 @@ class App {
   private routes = new Routes(this.app)
   private io = socketIo(this.server)
   private env = process.env.NODE_ENV
+  private serverInstance?: http.Server;
 
   async init (): Promise<void> {
     this.verifyEnv()
@@ -32,6 +40,7 @@ class App {
 
   setupMiddleware (): void {
     this.app.use(cors())
+    this.app.use(helmet())
     this.app.use(express.json())
     this.app.use(express.urlencoded({
       extended: true
@@ -47,23 +56,32 @@ class App {
   }
 
   async close (): Promise<void> {
+    if (!this.serverInstance) {
+      logger.warn('Servidor não iniciado')
+      return
+    }
+
+    const server = this.serverInstance
     logger.info('Desligando servidor...')
-    return new Promise((resolve) => this.server.close(async (err) => {
-      if (err) {
-        logger.error(`Error ao fechar servidor: ${err}`)
-        process.exit(1)
-      }
+
+    try {
+      await promisify(server.close)
       logger.info('Desligando base de dados...')
       await DataBaseService.closeConnection()
-      process.exit(0)
-    }))
+
+      logger.info('Tudo desligado com sucesso.')
+      process.exit(ExitStatus.Success)
+    } catch (e) {
+      logger.error(`Error ao finalizar servidor: ${e}`)
+      process.exit(ExitStatus.Failure)
+    }
   }
 
   getApp (): Express {
     return this.app
   }
 
-  verifyEnv () {
+  verifyEnv (): void {
     const listEnv = [
       'NODE_ENV',
       'AWS_ACCESS_KEY_ID',

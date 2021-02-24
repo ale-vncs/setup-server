@@ -2,12 +2,11 @@ import App from './app'
 import { logger } from '@logger'
 
 enum ExitStatus {
-  Success,
   Failure
 }
 
 (async (): Promise<void> => {
-  process.on('unhandledRejection', (reason, promise) => {
+  process.on('unhandledRejection', (reason) => {
     logger.error(`Falha no servidor devido a: ${reason}`)
     throw reason
   })
@@ -25,13 +24,7 @@ enum ExitStatus {
 
     const exitSignal: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGHUP']
     exitSignal.forEach(sig => process.on(sig, async () => {
-      try {
-        await server.close()
-        process.exit(ExitStatus.Success)
-      } catch (e) {
-        logger.error('Error ao desligar o servidor')
-        process.exit(ExitStatus.Failure)
-      }
+      await server.close()
     }))
   } catch (e) {
     logger.error(`Error ao iniciar servidor: ${e.message}`)
