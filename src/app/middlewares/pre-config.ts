@@ -3,19 +3,12 @@ import crypt from '../utils/crypt'
 import DatabaseService from '@services/database-service'
 import AbstractMiddleware from '@src/app/middlewares/abstract-middleware'
 import { logger } from '@logger'
-import randomBytes from 'random-bytes'
 import { setHttpContext } from '@utils/http-context'
 import Gender from '@models/gender'
 import { ApiError } from '@src/app/exceptions/api-error'
 
 class PreConfig extends AbstractMiddleware {
   async init (req: Request, res: Response, next: NextFunction): Promise<unknown> {
-    setHttpContext('req', {
-      host: `${req.protocol}://${req.get('host')}`,
-      method: req.method || '-',
-      originalUrl: req.originalUrl || '-',
-      requestId: randomBytes.sync(12).toString('hex') || '-'
-    })
     try {
       await DatabaseService.checkConnection()
     } catch (e) {

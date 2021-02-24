@@ -1,7 +1,8 @@
 import { Express, Router as RouterExpress } from 'express'
 import path from 'path'
 import { readdirSync } from 'fs'
-import { pathApi, pathControllers } from '@src/config/paths'
+import { pathControllers } from '@src/config/paths'
+import TimeMiddleware from '../middlewares/time-middleware'
 import Auth from '../middlewares/auth'
 import PreConfig from '../middlewares/pre-config'
 import ErrorHandler from '../middlewares/error-handler'
@@ -48,12 +49,7 @@ class Router {
   }
 
   private startMiddleware (): void {
-    this.app.get(pathApi, (req, res) => {
-      const status = {
-        status: 200
-      }
-      res.send(status)
-    })
+    this.app.use(TimeMiddleware.setTime)
   }
 
   private endMiddleware (): void {
